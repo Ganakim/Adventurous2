@@ -2,7 +2,10 @@ import PIXI from 'pixi.js'
 import './main.html'
 import './imports'
 
-Session.set('page', 'home')
+Template.body.onCreated(()=>{
+  Session.set('page', 'home')
+  Session.set('mouse', {x:0, y:0})
+})
 
 Tracker.autorun(()=>{
   if(Session.get('page') != 'home' && Game.state == 'running'){

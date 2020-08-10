@@ -54,10 +54,10 @@ export default (options, events)=>({
     })
     
     this.radio.on('pointertap', (e)=>{
-      for(var spirit of Game.spirits.filter(a=>a.group == this.group)){
+      Object.values(Game.spirits).filter(a=>a.group == this.group).map(spirit=>{
         spirit.radio.filters = [empty]
         spirit.selected = false
-      }
+      })
       this.radio.filters = []
       this.selected = true
       if(events.pressed){

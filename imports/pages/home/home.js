@@ -24,6 +24,13 @@ Template.home.onRendered(()=>{
 Template.home.helpers({
   fullscreenIcon(){
     return Session.get('fsIcon') || 'expand'
+  },
+  gameNavIcons(){
+    return [
+      {icon:'cog', style:'fad', size:'fa-2x', action(){
+        console.log('Open settings')
+      }}
+    ]
   }
 })
 
@@ -59,5 +66,8 @@ Template.home.events({
   },
   'fullscreenchange #Home, MSFullscreenChange #Home'(){
     Session.set('fsIcon', (document.fullscreenElement || document.webkitFullscreenElement) ? 'compress' : 'expand')
+  },
+  'click #GameNavIcons i'(){
+    this.action()
   }
 })

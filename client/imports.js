@@ -1,8 +1,8 @@
-//pages
+// pages
 import '/imports/pages/home/home'
-//components
-//game
+// components
+// game
 import '/game/game'
-//lib
+// lib
 import '/lib/tools'
 import '/lib/collections'

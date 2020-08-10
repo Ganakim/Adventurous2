@@ -52,6 +52,9 @@ Game = {
     loadAssets()
     // this.layoutUI('combat')
     window.addEventListener('resize', this.resize)
+    this.stage.on('pointermove', (e)=>{
+      Session.set('mouse', {x:Math.round(e.data.global.x), y:Math.round(e.data.global.y)})
+    })
   },
   units(units = 0, to){
     if(to == 'px'){
@@ -69,7 +72,7 @@ Game = {
     switch(mode){
       case 'combat':
         // console.log(info)
-        Game.background = new Spirit('ui', 'img', {src:'areas/inn.jpg', width:Game.app.screen.width, height:'auto'})
+        Game.background = new Spirit('ui', 'img', {src:'areas/inn', width:Game.app.screen.width, height:'auto'})
         this.stage.addChild(Game.background, new Spirit('ui', 'bottom'))
       break
       default:
@@ -128,30 +131,25 @@ function loadAssets(){
     }else{
       var total = 0
       var loaded = 0
-      var target = ''
-      function readAssets(asset, depth){
-        for(var file of asset.files){
-          Game.loader.add(`${target.split('/')[1]}-${file}`.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, ''), `${target}/${file}`)
+      read([''], res)
+      function read(path, dir){
+        dir.files.map(a=>{
+          var img = new Image()
+          img.onload = function(){
+            Game.textures[path.concat(a.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, '')).join('/').slice(1)] = new PIXI.Texture.from(this)
+            loaded++
+            Game.layoutUI('loading', {verbage:'Loading Texture:', item:a.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, ''), progress:loaded, total:total})
+            if(loaded == total){
+              Game.layoutUI('mainMenu')
+            }
+          }
+          img.src = path.concat(a).join('/')
           total++
-        }
-        delete asset.files
-        for(var [a, b] of Object.entries(asset)){
-          target = target.split('/')
-          target[depth+1] = a
-          target = target.join('/')
-          readAssets(b, depth+1)
-        }
+        })
+        delete dir.files
+        Object.entries(dir).map(([dirName, a])=>read(path.concat(dirName), a))
       }
-      readAssets(res, 0)
-      Game.loader.onProgress.add((loader, resource)=>{
-        Game.textures[resource.name] = resource.texture
-        loaded++
-        Game.layoutUI('loading', {verbage:'Loading Texture:', item:resource.name, progress:loaded, total:total})
-        if(loaded == total){
-          Game.layoutUI('mainMenu')
-        }
-      })
-      Game.loader.load()
+      Game.layoutUI('loading', {verbage:'Loading Textures', item:'', progress:0, total:1})
     }
   })
 }

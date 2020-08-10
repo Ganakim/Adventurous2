@@ -10,13 +10,21 @@
       {{/if}}
       <div class="text-secondary">FPS: {{get "fps"}}</div>
       <div class="text-secondary">Size: {{get "screenSize"}}</div>
+      <div class="text-secondary d-flex">X: {{get "mouse.x"}}, Y: {{get "mouse.y"}}</div>
       <div class="btn btn-dark px-2 pt-2 pb-1">
         <i class="fs far fa-{{fullscreenIcon}} fa-2x"></i>
       </div>
     </div>
-    <div id="UIOverlay" class="position-absolute"></div>
-    {{#if (is (get "state") "initializing")}}
-      You'll need to log in before you can play.
-    {{/if}}
+    <div id="UIOverlay" class="position-absolute">
+      {{#if (is (get "state") "initializing")}}
+        You'll need to log in before you can play.
+      {{else}}
+        <div id="GameNavIcons" class="d-flex">
+          {{#each gameNavIcons}}
+            <i class="{{style}} fa-{{icon}} {{size}} m-1"></i>
+          {{/each}}
+        </div>
+      {{/if}}
+    </div>
   </div>
 </template>

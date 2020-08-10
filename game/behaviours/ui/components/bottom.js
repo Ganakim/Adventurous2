@@ -2,27 +2,36 @@ import PIXI from 'pixi.js'
 import { Spirit } from '../../../spirits'
 export default (options, events)=>({
   init(){
-    this.bottom = new PIXI.Sprite.from('ui/bottom.png')
-    this.addChild(new PIXI.Sprite(this.test))
-    this.bottom.texture.baseTexture.on('loaded', ()=>{
-      this.resize()
-    })
+    this.bottom = new PIXI.Sprite(Game.textures['ui/bottom'])
 
-    Game.console = new PIXI.Graphics()
-    Game.console.y = Game.app.screen.height
+    var consoleBg = new PIXI.Graphics()
+    consoleBg.beginFill(0x101010)
+    consoleBg.drawRect(0, Game.app.screen.height - this.bottomHeight(), this.bottomHeight(), this.bottomHeight())
+
+    Game.console = new PIXI.Container()
+    Game.console.y = Game.app.screen.height - this.bottomHeight()
     Game.console.interactive = true
 
-    this.addChild(this.bottom, Game.console)
+    this.addChild(this.bottom, consoleBg, Game.console)
 
     this.characters = []
 
-    Game.console.on('touchmove', (e)=>{
-      console.log(e)
+    var scrollStart
+    this.scrollPos = 0
+
+    consoleBg.on('touchmove', (e)=>{
+      if(e.target == consoleBg){
+        if(scrollStart){
+          this.scrollPos += e.data.global.y < scrollStart ? 2 : -2
+          this.scrollPos = this.scrollPos < 0 ? 0 : (this.scrollPos > 100 ? 100 : this.scrollPos)
+          this.resize()
+        }
+        scrollStart = e.data.global.y
+      }
     })
 
     Game.console.on('pointerover', (e)=>{
       console.log('listen to scroll')
-
     })
 
     Game.console.on('pointerout', (e)=>{
@@ -119,45 +128,69 @@ export default (options, events)=>({
         Game.console.children[0].remove()
       }
     }
+    
+    this.resize()
   },
   step(){
     if(Game.console.children.length < Game.logs.flat(3).length){
       Game.console.writeLogs()
     }
-    if(Game.currentParty() && this.characters.length != Game.currentParty().front.length + Game.currentParty().back.length){
-      while(this.characters.length){
-        this.characters[0].remove()
-      }
-      for(var line of [{name:'front', y:10}, {name:'back', y:100}]){
-        for(var character of Game.currentParty()[line.name]){
-          var portrait = new Spirit('ui', 'portrait', {x:300, y:line.y, scale:{x:.6, y:.6}, character:character, ui:true})
-          this.characters.push(portrait)
-          this.bottom.addChild(portrait)
-        }
-      }
-      console.log(this.characters)
+    var party = Game.currentParty()
+    if(party && this.characters.length != (Object.keys(party.front).length + Object.keys(party.back).length)){
+      console.log('stepRedraw', this.characters.length, Object.keys(party.front).length + Object.keys(party.back).length)
+      this.redrawParty()
     }
+    // Game.console.y = (Game.app.screen.height - this.bottomHeight()) - ((Game.console.height - this.bottomHeight()) * (this.scrollPos / 100))
   },
   resize(){
     this.bottom.width = Game.app.screen.width
     this.bottom.height = this.bottomHeight()
     this.bottom.y = Game.app.screen.height - this.bottomHeight()
-
-    if(Game.console.y > Game.app.screen.height - this.bottomHeight()){
-      Game.console.y = Game.app.screen.height - this.bottomHeight()
-    }
-    Game.console.erase()
-    Game.console.beginFill(0x101010)
-    Game.console.lineStyle(5, 0x000000, 1, 0)
-    Game.console.drawRect(0, (Game.app.screen.height-Game.console.y)-this.bottomHeight(), this.bottomHeight(), this.bottomHeight())
-
-    Game.console.writeLogs()
+    this.redrawParty()
   },
   kill(){
     delete Game.console
   },
   bottomHeight(){
-    return (Game.app.screen.width * this.bottom.texture.orig.height)/this.bottom.texture.orig.width
+    return (Game.app.screen.width * Game.textures['ui/bottom'].height)/Game.textures['ui/bottom'].width
+  },
+  redrawParty(){
+    if(!this.drawingParty){
+      this.drawingParty = true
+      var party = Game.currentParty()
+      while(this.characters.length){
+        this.characters.shift().remove()
+      }
+      var spots = Object.keys(party.front).concat(Object.keys(party.back).map(a=>parseInt(a)+.5))
+      var bounds = {
+        left: Math.min(...spots),
+        right: Math.max(...spots),
+        rows: (Object.keys(party.front).length && Object.keys(party.back).length),
+        size: `${Game.app.screen.width/2}:${this.bottomHeight()}`
+      }
+      console.log(party.front, party.back)
+      var emptyBox = new PIXI.Graphics()
+      emptyBox.beginFill(0xFFFFFF)
+      for(var i=bounds.left;i<=bounds.right;i++){
+        var x = (Game.app.screen.width/4) + 100 + ((((Game.app.screen.width/2)-200)/(bounds.right-bounds.left)) * (i-bounds.left))
+        if(party.front[i]){
+          var portrait = new Spirit('ui', 'portrait', {x:x, y:750, character: party.front[i], anchor:{x:.5, y:.5}})
+          this.characters.push(portrait)
+          this.addChild(portrait)
+        }else{
+          this.addChild(emptyBox.drawRect(x - 50, 750 - 50, 100, 100))
+        }
+        x = (Game.app.screen.width/4) + 100 + ((((Game.app.screen.width/2)-200)/(bounds.right-bounds.left)) * ((i+.5-bounds.left)))
+        if(party.back[i]){
+          var portrait = new Spirit('ui', 'portrait', {x:x, y:950, character: party.back[i], anchor:{x:.5, y:.5}})
+          this.characters.push(portrait)
+          this.addChild(portrait)
+        }else{
+          this.addChild(emptyBox.drawRect(x - 50, 950 - 50, 100, 100))
+        }
+      }
+      delete this.drawingParty
+    }
   }
 })
 

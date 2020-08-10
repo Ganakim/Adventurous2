@@ -22,7 +22,15 @@ Meteor.methods({
           target[item] = {files:[]}
           readDir(`${dir}/${item}`)
         }else{
-          if(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(item) && dir == 'public/charParts'){
+          if(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(item) && [
+            'public/achievements',
+            'public/areas',
+            'characters',
+            'charParts',
+            'items',
+            'monsters',
+            'ui',
+          ].some((a)=>dir.includes(a))){
             target.files.push(item)
           }
         }
@@ -42,54 +50,11 @@ Meteor.methods({
       throw new Meteor.Error('404', 'Party not found.')
     }
   },
-  explore(action){
-    var party = Parties.findOne(Meteor.user().party)
-    // authenticate the party
-    var coords = {x:party.location.x, y:party.location.y, z:party.location.z}
-    switch(action){
-      case 'up':
-        coords.y++
-        break
-      case 'down':
-        coords.y--
-        break
-      case 'left':
-        coords.x--
-        break
-      case 'right':
-        coords.x++
-        break
-      case 'descend':
-        coords.z++
-        break
-      case 'ascend':
-        coords.z--
-      case 'exit':
-        break
-    }
-    if(party.maps[coords.z][coords.x][coords.y] !== null){
-      Parties.update(party._id, {$set:{'location.x':coords.x, 'location.y':coords.y}})
-      // check if tile has an event or something
-      /*
-      maps = [
-        [
-          [{actions:{exit:<AreaID>}}, null, null, null],
-          [{encounter:{enemies:[gerbil, gerbilBoss, gerbil], rewards:{items:[], gold:0, exp:0}}}, {}, {flags:['secret']}, {actions:{whisk:1}],
-          [null, {actions:{rest:100}}, null, null]
-          [{actions:{exit:<AreaID>}}, {}, {}, {actions:{loot:{rewards:{items:[], gold:0, exp:0}}}}]
-        ],
-        [
-          [{actions:{whisk:1}}, null, {actions:{loot:{encounter:{enemies:[mimic, rewards:{items:[], gold:0, exp:0}}}}}, null],
-          [{}, null, {}, {actions:{whisk:-1}}],
-          [{}, null, null, {}],
-          [{}, {}, {}, {}]
-        ]
-      ]
-      */
-    }
-  },
-  startCombat(){
-
+  updateChar(id, changesList){
+    var char = Characters.findOne(id)
+    Object.entries(changesList).map(([method, changes])=>{
+      // define actions and requirements
+    })
   }
 })
 
