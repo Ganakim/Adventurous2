@@ -14,6 +14,22 @@ Tracker.autorun(()=>{
   }
 })
 
+Template.body.events({
+  'click [dropdown]'(e){
+    const target = $(e.target).closest('[dropdown]')
+    const dropTarget = $(target.attr('dropdown'))
+    if(dropTarget[0]){
+      e.stopPropagation()
+      dropTarget.attr({dropdown: dropTarget.attr('dropdown') == 'true' ? 'false' : 'true'})
+    }
+  },
+  'click'(e){
+    if(!($(e.target).is('[dropdown]') || $(e.target).is('[dropdown] *'))){
+      $('[dropdown="true"]').attr({dropdown: 'false'})
+    }
+  },
+})
+
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame
 window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame
 Session.set('subscribed', false)

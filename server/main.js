@@ -8,7 +8,7 @@ Meteor.methods({
   signUp(userInfo){
     return Accounts.createUser(userInfo)
   },
-  readAssets(){
+  readAssets(assetPicker){
     var dirs = {files:[]}
     function readDir(dir){
       var target = dirs
@@ -22,15 +22,7 @@ Meteor.methods({
           target[item] = {files:[]}
           readDir(`${dir}/${item}`)
         }else{
-          if(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(item) && [
-            'public/achievements',
-            'public/areas',
-            'characters',
-            'charParts',
-            'items',
-            'monsters',
-            'ui',
-          ].some((a)=>dir.includes(a))){
+          if(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(item) && assetPicker.some((a)=>dir.includes(a))){
             target.files.push(item)
           }
         }

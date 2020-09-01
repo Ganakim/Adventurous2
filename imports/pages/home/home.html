@@ -14,8 +14,17 @@
       <div class="btn btn-dark px-2 pt-2 pb-1">
         <i class="fs far fa-{{fullscreenIcon}} fa-2x"></i>
       </div>
+      <div dropdown="#AssetsPickerList">Asset Picker</div>
+      <div id="AssetsPickerList" class="d-flex flex-column" dropdown="true">
+        {{#each assetOptions}}
+          <div class="form-group mb-0">
+            <label class="form-check-label" for="{{this}}Checkbox">{{this}}</label>
+            <input type="checkbox" class="" id="{{this}}Checkbox">
+          </div>
+        {{/each}}
+      </div>
     </div>
-    <div id="UIOverlay" class="position-absolute">
+    <!-- <div id="UIOverlay" class="position-absolute">
       {{#if (is (get "state") "initializing")}}
         You'll need to log in before you can play.
       {{else}}
@@ -25,6 +34,6 @@
           {{/each}}
         </div>
       {{/if}}
-    </div>
+    </div> -->
   </div>
 </template>

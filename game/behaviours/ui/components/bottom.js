@@ -109,7 +109,7 @@ export default (options, events)=>({
           entry.map(line=>{
             var x = 0
             line.map(word=>{
-              var style = Game.styles.temp('log', {fill: word.color})
+              var style = Game.styles.get('log', {fill: word.color})
               Game.console.addChild(new Spirit('ui', 'label', {x:x, y:y, text:word.text, style:style}, word.callbacks || {}))
               x += Tools.textMetrics(word.text, style).width
             })

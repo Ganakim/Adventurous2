@@ -17,7 +17,7 @@ export default (options, events)=>({
     this.addChild(
       new Spirit('ui', 'pane', {width:menu.width, height:menu.height}),
       new Spirit('ui', 'label', {x:menu.width/2, y:175, text:'Loading... Please wait', style:Game.styles.get('menu'), anchor:{x:.5}}),
-      new Spirit('ui', 'label', {x:menu.width/2, y:240, text:`${options.verbage || 'Loading:'} ${options.item} ${options.progress}/${options.total} ${Math.floor((options.progress/options.total)*100)}%`, style:Game.styles.temp('menu', {fontSize: 16}), anchor:{x:.5}}),
+      new Spirit('ui', 'label', {x:menu.width/2, y:240, text:`${options.verbage || 'Loading:'} ${options.item} ${options.progress}/${options.total} ${Math.floor((options.progress/options.total)*100)}%`, style:Game.styles.get('menu', {fontSize: 16}), anchor:{x:.5}}),
       bar
     )
   },

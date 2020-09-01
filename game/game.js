@@ -18,11 +18,35 @@ Game = {
       fontFamily: "Verdana",
       strokeThickness: 1
     }),
-    icon: new PIXI.TextStyle({
+    fal: new PIXI.TextStyle({
+      name: 'icon',
+      fill: 0xFF0000,
+      fontFamily: 'Font Awesome 5 Pro',
+      fontWeight: 300
+    }),
+    far: new PIXI.TextStyle({
+      name: 'icon',
+      fill: 0xFF0000,
+      fontFamily: 'Font Awesome 5 Pro',
+      fontWeight: 400
+    }),
+    fas: new PIXI.TextStyle({
+      name: 'icon',
+      fill: 0xFF0000,
+      fontFamily: 'Font Awesome 5 Pro',
+      fontWeight: 900
+    }),
+    fad: new PIXI.TextStyle({
       name: 'icon',
       fill: 0xFF0000,
       fontFamily: 'Font Awesome 5 Duotone',
       fontWeight: 900
+    }),
+    fab: new PIXI.TextStyle({
+      name: 'icon',
+      fill: 0xFF0000,
+      fontFamily: 'Font Awesome 5 Brands',
+      fontWeight: 400
     }),
     log: new PIXI.TextStyle({
       name: 'log',
@@ -30,15 +54,10 @@ Game = {
       fontSize: 20,
       fontFamily: 'verdana'
     }),
-    get(name, clone = false){
-      return clone ? this[name].clone() : this[name]
+    get(name, changes){
+      var tempStyle = changes ? this[name].clone() : this[name]
+      return changes ? Tools.extend(tempStyle, changes) : tempStyle
     },
-    temp(name, changes){
-      var tempStyle = this[name].clone()
-      Tools.extend(tempStyle, changes)
-
-      return tempStyle
-    }
   },
   init(){
     this.app = new PIXI.Application({width:this.targetWidth, height:this.targetHeight, transparent:true, antialias:true})
@@ -49,8 +68,7 @@ Game = {
     Session.set('fps', 0)
     window.requestAnimationFrame(GameLoop)
     this.resize()
-    loadAssets()
-    // this.layoutUI('combat')
+    this.layoutUI('splash')
     window.addEventListener('resize', this.resize)
     this.stage.on('pointermove', (e)=>{
       Session.set('mouse', {x:Math.round(e.data.global.x), y:Math.round(e.data.global.y)})
@@ -73,14 +91,12 @@ Game = {
       case 'combat':
         // console.log(info)
         Game.background = new Spirit('ui', 'img', {src:'areas/inn', width:Game.app.screen.width, height:'auto'})
+        Game.nav = new Spirit('ui', 'nav', {x:10, y:10, z:10})
         this.stage.addChild(Game.background, new Spirit('ui', 'bottom'))
       break
       default:
         this.stage.addChild(new Spirit('ui', mode, info))
     }
-  },
-  initCombat(info){
-    this.layoutUI('combat', info)
   },
   resize(){
     if(!Game.focus){
@@ -120,38 +136,47 @@ Game = {
     }else{
       return Meteor.user().party ? new Party(Meteor.user().party) : false
     }
+  },
+  loadAssets(){
+    Game.layoutUI('loading', {progress:0, total:1})
+    // Session.set('assetPickerList', [
+    //   'achievements',
+    //   'areas',
+    //   'characters',
+    //   'charParts',
+    //   'items',
+    //   'monsters',
+    //   'ui',
+    // ])
+    Meteor.call('readAssets', Session.get('assetPickerList'), (err, res)=>{
+      if(err){
+        console.log('LOAD ASSETS ERROR:', err)
+      }else{
+        var total = 0
+        var loaded = 0
+        read([''], res)
+        function read(path, dir){
+          dir.files.map(a=>{
+            var img = new Image()
+            img.onload = function(){
+              Game.textures[path.concat(a.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, '')).join('/').slice(1)] = new PIXI.Texture.from(this)
+              loaded++
+              Game.layoutUI('loading', {verbage:'Loading Texture:', item:a.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, ''), progress:loaded, total:total})
+              if(loaded == total){
+                Game.layoutUI('mainMenu')
+              }
+            }
+            img.src = path.concat(a).join('/')
+            total++
+          })
+          delete dir.files
+          Object.entries(dir).map(([dirName, a])=>read(path.concat(dirName), a))
+        }
+        Game.layoutUI('loading', {verbage:'Loading Textures', item:'', progress:0, total:1})
+      }
+    })
   }
 }
 
-function loadAssets(){
-  Game.layoutUI('loading', {progress:0, total:1})
-  Meteor.call('readAssets', (err, res)=>{
-    if(err){
-      console.log('LOAD ASSETS ERROR:', err)
-    }else{
-      var total = 0
-      var loaded = 0
-      read([''], res)
-      function read(path, dir){
-        dir.files.map(a=>{
-          var img = new Image()
-          img.onload = function(){
-            Game.textures[path.concat(a.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, '')).join('/').slice(1)] = new PIXI.Texture.from(this)
-            loaded++
-            Game.layoutUI('loading', {verbage:'Loading Texture:', item:a.replace(/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i, ''), progress:loaded, total:total})
-            if(loaded == total){
-              Game.layoutUI('mainMenu')
-            }
-          }
-          img.src = path.concat(a).join('/')
-          total++
-        })
-        delete dir.files
-        Object.entries(dir).map(([dirName, a])=>read(path.concat(dirName), a))
-      }
-      Game.layoutUI('loading', {verbage:'Loading Textures', item:'', progress:0, total:1})
-    }
-  })
-}
 
 // Belongs in credits: MM

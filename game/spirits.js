@@ -7,6 +7,8 @@ import partySelect from './behaviours/ui/components/partySelect'
 import partyCreate from './behaviours/ui/components/partyCreate'
 import bottom from './behaviours/ui/components/bottom'
 import gameOptions from './behaviours/ui/components/options'
+import splash from './behaviours/ui/components/splash'
+import nav from './behaviours/ui/components/nav'
 // elements
 import label from './behaviours/ui/elements/label'
 import pane from './behaviours/ui/elements/pane'
@@ -21,9 +23,11 @@ export class Spirit extends PIXI.Container{
     super()
 
     var behaviours = {
+      'ui-container':()=>({init(){}}),
       'ui-bottom': bottom,
       'ui-loading': loading,
       'ui-mainMenu': mainMenu,
+      'ui-nav': nav,
       'ui-partySelect': partySelect,
       'ui-partyCreate': partyCreate,
       'ui-label': label,
@@ -33,7 +37,8 @@ export class Spirit extends PIXI.Container{
       'ui-textbox': textbox,
       'ui-portrait': portrait,
       'ui-img': img,
-      'ui-options': gameOptions
+      'ui-options': gameOptions,
+      'ui-splash': splash
     }
 
     Tools.extend(this, options)
