@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 import './home.html'
 
 Template.home.onRendered(()=>{
@@ -14,22 +13,22 @@ Template.home.onRendered(()=>{
     console.log('Waiting for user.')
     if(Meteor.user() && Session.get('subscribed') && Game.state == 'initializing'){
       console.log('User found, starting game')
-      WebFont.load({
-        custom: {
-          families: [
-            'Font Awesome 5 Pro:900,400,300',
-            'Font Awesome 5 Duotone:900',
-            'Font Awesome 5 Brands:400'
-          ],
-          urls: ['//use.fontawesome.com/releases/v5.14.0/css/all.css']
-        },
-        active:e=>{
-          console.log('fonts loaded!')
+      // WebFont.load({
+      //   custom: {
+      //     families: [
+      //       'Font Awesome 5 Pro:900,400,300',
+      //       'Font Awesome 5 Duotone:900',
+      //       'Font Awesome 5 Brands:400'
+      //     ],
+      //     urls: ['//use.fontawesome.com/releases/v5.14.0/css/all.css']
+      //   },
+      //   active:e=>{
+      //     console.log('fonts loaded!')
           Game.init()
           Game.state = 'running'
           Session.set('state', 'running')
-        }
-      })
+      //   }
+      // })
     }
   })
 

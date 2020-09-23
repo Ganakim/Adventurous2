@@ -1,4 +1,4 @@
-import PIXI from 'pixi.js'
+PIXI = require('pixi.js')
 import './main.html'
 import './imports'
 

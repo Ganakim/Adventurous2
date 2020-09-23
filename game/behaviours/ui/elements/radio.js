@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 export default (options, events)=>({
   init(){
     var borderWidth = (options.lineStyle ? (options.lineStyle.width || options.style ? (Tools.textMetrics('', options.style).height / 6) : 4) : (options.style ? (Tools.textMetrics('', options.style).height / 6) : 4))

@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 export default (options, events)=>({
   init(){
     this.textbox = $(`<input type="${options.type || 'text'}" class="position-absolute">`)

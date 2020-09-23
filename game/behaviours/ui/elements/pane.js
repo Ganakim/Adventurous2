@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 export default (options, events)=>({
   init(){
     var pane = new PIXI.Graphics()

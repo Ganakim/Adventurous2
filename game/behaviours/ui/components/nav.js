@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 import { Spirit } from '../../../spirits'
 export default (options, events)=>({
   init(){

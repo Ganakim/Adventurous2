@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 export default (options, events)=>({
     init(){
         var btn = new PIXI.Graphics()

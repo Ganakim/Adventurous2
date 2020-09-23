@@ -1,4 +1,3 @@
-import PIXI from 'pixi.js'
 export default (id, options, events)=>({
   init(){
     var monster = Mosters.findOne(id)
