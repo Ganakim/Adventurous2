@@ -1,4 +1,32 @@
 export default (options, events)=>({
+    
+    /*___________________________
+    INPUT
+
+    options:{
+        fill (opt): {
+            color,
+            alpha
+        },
+        lineStyle (opt):{
+            width,
+            color,
+            alpha
+        },
+        width,
+        height,
+        radius (opt),
+        text (opt),
+        style (opt),
+    }
+
+    events:{
+        enter,
+        pressed,
+        leave
+    }
+    ______________________________*/
+    
     init(){
         var btn = new PIXI.Graphics()
         if(options.fill){
